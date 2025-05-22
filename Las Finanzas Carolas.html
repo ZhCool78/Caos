@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Finanzas - Integrado</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Favicon corregido usando data URI -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23022d8e'/%3E%3Ctext x='16' y='20' font-family='Arial, sans-serif' font-size='16' font-weight='bold' text-anchor='middle' fill='white'%3EDE%3C/text%3E%3C/svg%3E">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .form-container {
+            max-width: 550px;
+            margin: 15px auto;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #1a365d;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon {
+            position: absolute;
+            left: 15px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: white;
+        }
+
+        .header-icon.right {
+            left: auto;
+            right: 15px;
+        }
+
+        .header-icon:hover {
+            color: #e0e0e0;
+        }
+
+        .form-row {
+            display: flex;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .form-row.dual-inputs {
+            gap: 10px;
+        }
+
+        .form-row.dual-inputs .form-input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .form-label {
+            background-color: #1a365d;
+            color: white;
+            padding: 10px 15px;
+            width: 130px;
+            font-weight: bold;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 0;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input select,
+        .form-input input[type="date"],
+        .form-input input[type="text"],
+        .form-input input[type="number"],
+        .form-input textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .form-input input[type="text"]#valor {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .input-prefix {
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-boxes {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .option-box {
+            padding: 10px;
+            text-align: center;
+            margin-right: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            min-width: 45px;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            border: 1px solid transparent;
+            transition: border-color 0.2s ease-in-out, transform 0.1s ease;
+        }
+
+        .option-box:active {
+            transform: scale(0.95);
+        }
+
+        .tipo-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 40px;
+            cursor: pointer;
+        }
+
+        .tipo-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .tipo-label.selected-ingreso {
+            color: #4caf50;
+        }
+
+        .tipo-label.selected-egreso {
+            color: #f44336;
+        }
+
+        .tipo-label.selected-inversion {
+            color: #2196F3;
+        }
+
+        .tipo-icon {
+            font-size: 2.2rem;
+            cursor: pointer;
+        }
+
+        .tipo-icon.ingreso {
+            color: #4caf50;
+        }
+
+        .tipo-icon.egreso {
+            color: #f44336;
+        }
+
+        .tipo-icon.inversion {
+            color: #2196F3;
+        }
+
+        .selected-icon {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .submit-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            border-radius: 5px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            transition: background-color 0.2s ease;
+            font-size: 1.1rem;
+        }
+
+        .submit-btn:hover {
+            background-color: #388e3c;
+        }
+
+        .check-icon {
+            margin-right: 8px;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffcdd2;
+            border: 1px solid #ef9a9a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .error-message ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        /* Summary styles */
+        .summary-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            padding: 10px 15px; /* Reduced padding for the blue background */
+        }
+
+        .summary-header h1 {
+            font-size: 1.2em; /* Reduced title size */
+            padding: 10px 0; /* Reduced padding for the title text */
+        }
+
+        .nav-arrow {
+            position: absolute;
+            left: 0;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .right-arrow {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .nav-arrow:hover,
+        .right-arrow:hover {
+            color: #000;
+        }
+
+        /* New styles for positioning the home icon */
+        .header-icon.right-position {
+            left: auto;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white; /* Ensure white color */
+        }
+
+        /* For the previous month home icon */
+        #previous-month .nav-arrow {
+            left: auto;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white; /* Ensure white color */
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        #total-amount {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+
+        #legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        #categories-chart-container {
+            height: 400px;
+            position: relative;
+        }
+
+        .sum-value {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+
+        @media (max-width: 480px) {
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-row.dual-inputs {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .form-row.dual-inputs .form-input {
+                min-width: 0;
+            }
+
+            .form-label {
+                width: 100%;
+                box-sizing: border-box;
+                border-radius: 4px 4px 0 0;
+                text-align: left;
+            }
+
+            .form-input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .form-input select,
+            .form-input input[type="date"],
+            .form-input input[type="text"],
+            .form-input input[type="number"],
+            .form-input textarea {
+                border-radius: 0 0 4px 4px;
+            }
+
+            .input-prefix {
+                border-radius: 0;
+            }
+
+            .form-input input[type="text"]#valor {
+                border-radius: 0 0 4px 44px;
+            }
+
+            .tipo-icon {
+                font-size: 1.8rem;
+            }
+
+            .tipo-option {
+                margin: 0 20px;
+            }
+
+            .header {
+                font-size: 1.2em;
+            }
+
+            #chart-container {
+                height: 250px;
+            }
+
+            #categories-chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="finances-form-section" class="form-container">
+        <h2 class="header">
+            <a href="#" id="view-summary-link" class="header-icon" title="Ver resumen del mes">
+                <i class="bi bi-bar-chart-fill"></i>
+            </a>
+            Mis Finanzas
+        </h2>
+        <form id="finanzas-form">
+            <div id="error-message" class="error-message" style="display: none;"></div>
+
+            <div class="form-row">
+                <div class="form-label">Tipo</div>
+                <div class="form-input">
+                    <div class="option-boxes">
+                        <div class="tipo-option">
+                            <span id="ingreso-label" class="tipo-label selected-ingreso">Ingreso</span>
+                            <i id="ingreso-icon" class="bi bi-arrow-down-circle tipo-icon ingreso selected-icon"
+                                title="Ingreso"></i>
+                        </div>
+                        <div class="tipo-option">
+                            <span id="inversion-label" class="tipo-label">Inversión</span>
+                            <i id="inversion-icon" class="bi bi-graph-up-arrow tipo-icon inversion"
+                                title="Inversión"></i>
+                        </div>
+                        <div class="tipo-option">
+                            <span id="egreso-label" class="tipo-label">Egreso</span>
+                            <i id="egreso-icon" class="bi bi-arrow-up-circle tipo-icon egreso" title="Egreso"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">Categoría</div>
+                <div class="form-input">
+                    <select id="categoria-select" required>
+                        <option value="" selected disabled>Seleccione una categoría</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">Subcategoría</div>
+                <div class="form-input">
+                    <select id="subcategoria-select" required>
+                        <option value="" selected disabled>Seleccione una subcategoría</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">Fecha</div>
+                <div class="form-input">
+                    <input id="fecha" type="date" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">Valor</div>
+                <div class="form-input">
+                    <span class="input-prefix">$</span>
+                    <input id="valor" type="text" placeholder="0.00" inputmode="decimal" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">Comentario</div>
+                <div class="form-input">
+                    <textarea id="comentario" rows="3" placeholder="Añade un comentario (opcional)"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <button type="submit" class="submit-btn">
+                    <span class="check-icon">✓</span> Enviar Datos
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="summary-section" class="container" style="display: none;">
+        <div class="header summary-header">
+            <a href="#" id="back-to-form-link" class="header-icon nav-arrow right-position" title="Volver al formulario">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
+            <h1>Resumen de Mayo</h1>
+        </div>
+
+        <div class="card">
+            <div id="legend">
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #e74c3c;"></div>
+                    <span>Egreso</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #2ecc71;"></div>
+                    <span>Ingreso</span>
+                </div>
+            </div>
+            <div id="chart-container">
+                <canvas id="inOutChart"></canvas>
+                <div id="total-amount"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Egreso - Categoría</h3>
+            <div id="categories-chart-container">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+            <div class="sum-value">SUM de Valor</div>
+        </div>
+    </div>
+
+    <div class="container" id="previous-month" style="display: none;">
+        <div class="header summary-header">
+            <a href="#" id="back-to-form-link-prev" class="header-icon nav-arrow" title="Volver al formulario">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
+            <h1>Resumen de Abril</h1>
+        </div>
+
+        <div class="card">
+            <div id="legend-prev">
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #e74c3c;"></div>
+                    <span>Egreso</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #2ecc71;"></div>
+                    <span>Ingreso</span>
+                </div>
+            </div>
+            <div id="chart-container">
+                <canvas id="inOutChartPrev"></canvas>
+                <div id="total-amount-prev"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Egreso - Categoría</h3>
+            <div id="categories-chart-container">
+                <canvas id="categoriesChartPrev"></canvas>
+            </div>
+            <div class="sum-value">SUM de Valor</div>
+        </div>
+    </div>
+
+
+
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Formulario Mis Finanzas Logic (from Las Finanzas Carolas) ---
+        const categorias = {
+            "Ingreso": ["Salario Sergio", "Salario Juli", "Child Support", "Otro"],
+            "Egreso": ["Mercado", "Vivienda", "Transporte", "Servicios", "Regalos",
+                "Familia", "Cosas de Casa", "Salud", "Salidas", "Educación",
+                "Pensión y retro", "Viajes", "Otros"],
+            "Inversión": ["Fondo de Emergencia", "Acciones", "Bonos", "ETFs", "Criptomonedas", "Fondos Indexados", "Ahorro Jubilación", "Otros"]
+        };
+
+        const subcategorias = {
+            "Salario Sergio": ["Salario", "Otros"],
+            "Salario Juli": ["Voces", "Clases"],
+            "Child Support": ["Federal", "Provincial"],
+            "Otro": ["Otros"],
+            "Mercado": ["Maxi", "Costco", "Latino", "Otro"],
+            "Vivienda": ["Hipoteca", "Taxes", "Seguro Hab"],
+            "Transporte": ["Lease", "Gas", "Parking", "Credito", "Mantenimiento", "Taxes", "Seguro"],
+            "Servicios": ["Hidro", "Celular", "Internet", "Financieros", "Otro"],
+            "Regalos": ["Donación", "Amigos", "Cumpleanios"],
+            "Familia": ["Lucas", "Emilia", "Olivia", "Sergio", "Juliana"],
+            "Cosas de Casa": ["Decoracion", "Miselania", "Mantenimiento", "Jardin",
+                "Ferreteria", "Oficina", "Piscina", "Madera"],
+            "Salud": ["Medicamentos", "Ortodoncia", "Seguro", "Otro"],
+            "Salidas": ["Cafecito o Helado", "Restaurante", "Boletas", "Amigos"],
+            "Educación": ["Deporte", "Libros"],
+            "Pensión y retro": ["Pensión Ju", "Pensión Sg", "Cegep", "Seguro Vida"],
+            "Viajes": ["Colombia", "Glastonbury", "Amsterdam", "Quebec", "Otro"],
+            "Otros": ["Otros"],
+            "Fondo de Emergencia": ["Ahorro", "Retiro"],
+            "Acciones": ["AAPL", "MSFT", "AMZN", "TSLA", "Otras"],
+            "Bonos": ["Gubernamentales", "Corporativos", "Otros"],
+            "ETFs": ["S&P 500", "Dow Jones", "Nasdaq", "Otros"],
+            "Criptomonedas": ["Bitcoin", "Ethereum", "Otras"],
+            "Fondos Indexados": ["Vanguard", "BlackRock", "Otros"],
+            "Ahorro Jubilación": ["RRSP", "TFSA", "401K", "Otros"],
+            "Otros": ["Varios"]
+        };
+
+        const ingresoIcon = document.getElementById('ingreso-icon');
+        const egresoIcon = document.getElementById('egreso-icon');
+        const inversionIcon = document.getElementById('inversion-icon');
+        const ingresoLabel = document.getElementById('ingreso-label');
+        const egresoLabel = document.getElementById('egreso-label');
+        const inversionLabel = document.getElementById('inversion-label');
+        const categoriaSelect = document.getElementById('categoria-select');
+        const subcategoriaSelect = document.getElementById('subcategoria-select');
+        const formulario = document.getElementById('finanzas-form');
+        const valorInput = document.getElementById('valor');
+        const errorMessageDiv = document.getElementById('error-message');
+        const fechaInput = document.getElementById('fecha');
+
+        let tipoOperacionSeleccionada = 'Ingreso';
+
+        function limpiarErrores() {
+            errorMessageDiv.innerHTML = '';
+            errorMessageDiv.style.display = 'none';
+        }
+
+        function mostrarErrores(errores) {
+            limpiarErrores();
+            if (errores.length > 0) {
+                const ul = document.createElement('ul');
+                errores.forEach(error => {
+                    const li = document.createElement('li');
+                    li.textContent = error;
+                    ul.appendChild(li);
+                });
+                errorMessageDiv.appendChild(ul);
+                errorMessageDiv.style.display = 'block';
+            }
+        }
+
+        function actualizarSeleccionTipoOperacion(tipo) {
+            tipoOperacionSeleccionada = tipo;
+
+            ingresoIcon.classList.remove('selected-icon');
+            egresoIcon.classList.remove('selected-icon');
+            inversionIcon.classList.remove('selected-icon');
+            ingresoLabel.classList.remove('selected-ingreso');
+            egresoLabel.classList.remove('selected-egreso');
+            inversionLabel.classList.remove('selected-inversion');
+
+            if (tipo === 'Ingreso') {
+                ingresoIcon.classList.add('selected-icon');
+                ingresoLabel.classList.add('selected-ingreso');
+            } else if (tipo === 'Egreso') {
+                egresoIcon.classList.add('selected-icon');
+                egresoLabel.classList.add('selected-egreso');
+            } else if (tipo === 'Inversión') {
+                inversionIcon.classList.add('selected-icon');
+                inversionLabel.classList.add('selected-inversion');
+            }
+
+            populateCategorias(tipo);
+            clearSubcategorias();
+        }
+
+        ingresoIcon.addEventListener('click', () => actualizarSeleccionTipoOperacion('Ingreso'));
+        egresoIcon.addEventListener('click', () => actualizarSeleccionTipoOperacion('Egreso'));
+        inversionIcon.addEventListener('click', () => actualizarSeleccionTipoOperacion('Inversión'));
+
+        ingresoLabel.addEventListener('click', () => actualizarSeleccionTipoOperacion('Ingreso'));
+        egresoLabel.addEventListener('click', () => actualizarSeleccionTipoOperacion('Egreso'));
+        inversionLabel.addEventListener('click', () => actualizarSeleccionTipoOperacion('Inversión'));
+
+        ingresoIcon.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actualizarSeleccionTipoOperacion('Ingreso');
+        }, { passive: false });
+        egresoIcon.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actualizarSeleccionTipoOperacion('Egreso');
+        }, { passive: false });
+        inversionIcon.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actualizarSeleccionTipoOperacion('Inversión');
+        }, { passive: false });
+        ingresoLabel.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actualizarSeleccionTipoOperacion('Ingreso');
+        }, { passive: false });
+        egresoLabel.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actualizarSeleccionTipoOperacion('Egreso');
+        }, { passive: false });
+        inversionLabel.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actualizarSeleccionTipoOperacion('Inversión');
+        }, { passive: false });
+
+        function populateCategorias(tipo) {
+            categoriaSelect.innerHTML = '<option value="" selected disabled>Seleccione una categoría</option>';
+            if (categorias[tipo]) {
+                categorias[tipo].forEach(categoria => {
+                    const option = document.createElement('option');
+                    option.value = categoria;
+                    option.textContent = categoria;
+                    categoriaSelect.appendChild(option);
+                });
+            }
+        }
+
+        function populateSubcategorias(categoria) {
+            subcategoriaSelect.innerHTML = '<option value="" selected disabled>Seleccione una subcategoría</option>';
+            if (subcategorias[categoria]) {
+                subcategorias[categoria].forEach(subcategoria => {
+                    const option = document.createElement('option');
+                    option.value = subcategoria;
+                    option.textContent = subcategoria;
+                    subcategoriaSelect.appendChild(option);
+                });
+            }
+        }
+
+        function clearSubcategorias() {
+            subcategoriaSelect.innerHTML = '<option value="" selected disabled>Seleccione una subcategoría</option>';
+        }
+
+        categoriaSelect.addEventListener('change', function () {
+            if (this.value) {
+                populateSubcategorias(this.value);
+            } else {
+                clearSubcategorias();
+            }
+        });
+
+        valorInput.addEventListener('input', function (e) {
+            let value = e.target.value;
+            value = value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            if (parts[1] && parts[1].length > 2) {
+                value = parts[0] + '.' + parts[1].substring(0, 2);
+            }
+            e.target.value = value;
+        });
+
+        formulario.addEventListener('submit', function (e) {
+            e.preventDefault();
+            limpiarErrores();
+
+            const categoria = categoriaSelect.value;
+            const subcategoria = subcategoriaSelect.value;
+            const fecha = document.getElementById('fecha').value;
+            const valor = valorInput.value;
+
+            const errores = [];
+            if (!tipoOperacionSeleccionada) {
+                errores.push("Debe seleccionar Ingreso, Egreso o Inversión.");
+            }
+            if (!categoria) {
+                errores.push("Debe seleccionar una categoría.");
+            }
+            if (!subcategoria) {
+                errores.push("Debe seleccionar una subcategoría.");
+            }
+            if (!fecha) {
+                errores.push("Debe seleccionar una fecha.");
+            }
+            if (!valor || parseFloat(valor) <= 0) {
+                errores.push("Debe ingresar un valor mayor que cero.");
+            }
+
+            if (errores.length > 0) {
+                mostrarErrores(errores);
+                return;
+            }
+
+            const formData = {
+                tipo: tipoOperacionSeleccionada,
+                categoria: categoria,
+                subcategoria: subcategoria,
+                fecha: fecha,
+                valor: valor,
+                comentario: document.getElementById('comentario').value
+            };
+
+            console.log(formData);
+
+            // Enviar datos a Google Sheets
+            enviarDatosGoogleSheets(formData);
+        });
+
+        // Función para enviar datos a Google Sheets
+        function enviarDatosGoogleSheets(datos) {
+            // ¡IMPORTANTE! Reemplaza con la URL de tu Apps Script desplegado
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxKjfx1MhXQQFGR78-O6MuGYSwdHSihtTBxjXIm-OEnIExDhH2MOsRvYQ1XSe9K7_wJ/exec';
+
+            const formData = new FormData();
+            formData.append('tipo', datos.tipo);
+            formData.append('categoria', datos.categoria);
+            formData.append('subcategoria', datos.subcategoria);
+            formData.append('fecha', datos.fecha);
+            formData.append('valor', datos.valor);
+            formData.append('comentario', datos.comentario || '');
+
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="check-icon">⌛</span> Enviando...';
+            submitBtn.disabled = true;
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    alert('Datos enviados correctamente a la hoja de cálculo.');
+
+                    formulario.reset();
+                    tipoOperacionSeleccionada = 'Ingreso';
+                    actualizarSeleccionTipoOperacion('Ingreso');
+                    fechaInput.value = '';
+                    valorInput.value = '';
+                    setInitialDate();
+
+                    // Después de enviar datos, vuelve a cargar y procesar para actualizar los gráficos
+                    fetchFinancialData();
+
+                } else {
+                    alert('Error al enviar los datos: ' + data.message);
+                    console.error('Error del servidor:', data.error);
+                }
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error de red o CORS:', error);
+                alert('Ocurrió un error al enviar los datos. Por favor, intente nuevamente.');
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        function setInitialDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            let month = today.getMonth() + 1;
+            let day = today.getDate();
+
+            month = month < 10 ? '0' + month : month;
+            day = day < 10 ? '0' + day : day;
+
+            fechaInput.value = `${year}-${month}-${day}`;
+        }
+
+        setInitialDate();
+        actualizarSeleccionTipoOperacion('Ingreso');
+
+        // --- Resumen del Mes Logic - Ahora los datos iniciales serán vacíos y se llenarán con fetch ---
+        const inOutData = {
+            labels: ['Egreso', 'Ingreso'],
+            datasets: [{
+                data: [0, 0], // Se inicializa en 0, se llenará con datos de la hoja
+                backgroundColor: ['#e74c3c', '#2ecc71'],
+                borderWidth: 0
+            }]
+        };
+
+        const categoryData = {
+            labels: [],
+            values: [],
+            colors: []
+        };
+
+        const inOutDataPrev = {
+            labels: ['Egreso', 'Ingreso'],
+            datasets: [{
+                data: [0, 0], // Se inicializa en 0, se llenará con datos de la hoja
+                backgroundColor: ['#e74c3c', '#2ecc71'],
+                borderWidth: 0
+            }]
+        };
+
+        const categoryDataPrev = {
+            labels: [],
+            values: [],
+            colors: []
+        };
+
+        // Variables para almacenar los objetos Chart para poder destruirlos y recrearlos
+        let inOutChartInstance = null;
+        let categoriesChartInstance = null;
+        let inOutChartPrevInstance = null;
+        let categoriesChartPrevInstance = null;
+
+
+        function createInOutChart() {
+            const ctx = document.getElementById('inOutChart').getContext('2d');
+            // Destruir la instancia anterior si existe para evitar superposiciones
+            if (inOutChartInstance) {
+                inOutChartInstance.destroy();
+            }
+            inOutChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: inOutData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: $${value.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ingreso = inOutData.datasets[0].data[1];
+            const egreso = inOutData.datasets[0].data[0];
+            const diferencia = ingreso - egreso;
+
+            document.getElementById('total-amount').innerHTML = `
+                $${diferencia.toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                <br><span style="font-size: 14px; font-weight: normal;">Diferencia</span>
+            `;
+        }
+
+        function createCategoriesChart() {
+            const ctx = document.getElementById('categoriesChart').getContext('2d');
+            // Destruir la instancia anterior si existe
+            if (categoriesChartInstance) {
+                categoriesChartInstance.destroy();
+            }
+
+            const indices = Array.from(categoryData.values.keys());
+            indices.sort((a, b) => categoryData.values[b] - categoryData.values[a]);
+
+            const sortedLabels = indices.map(i => categoryData.labels[i]);
+            const sortedValues = indices.map(i => categoryData.values[i]);
+            const sortedColors = indices.map(i => categoryData.colors[i]);
+
+            categoriesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedLabels,
+                    datasets: [{
+                        data: sortedValues,
+                        backgroundColor: sortedColors,
+                        borderWidth: 0,
+                        barThickness: 20,
+                        maxBarThickness: 25
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const value = context.raw || 0;
+                                    return `$${value.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPreviousMonthCharts() {
+            const ctxPrev = document.getElementById('inOutChartPrev').getContext('2d');
+            // Destruir la instancia anterior si existe
+            if (inOutChartPrevInstance) {
+                inOutChartPrevInstance.destroy();
+            }
+            inOutChartPrevInstance = new Chart(ctxPrev, {
+                type: 'doughnut',
+                data: inOutDataPrev,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: $${value.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ingresoPrev = inOutDataPrev.datasets[0].data[1];
+            const egresoPrev = inOutDataPrev.datasets[0].data[0];
+            const diferenciaPrev = ingresoPrev - egresoPrev;
+
+            document.getElementById('total-amount-prev').innerHTML = `
+                $${diferenciaPrev.toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                <br><span style="font-size: 14px; font-weight: normal;">Diferencia</span>
+            `;
+
+            const ctxCatPrev = document.getElementById('categoriesChartPrev').getContext('2d');
+            // Destruir la instancia anterior si existe
+            if (categoriesChartPrevInstance) {
+                categoriesChartPrevInstance.destroy();
+            }
+
+            const indicesPrev = Array.from(categoryDataPrev.values.keys());
+            indicesPrev.sort((a, b) => categoryDataPrev.values[b] - categoryDataPrev.values[a]);
+
+            const sortedLabelsPrev = indicesPrev.map(i => categoryDataPrev.labels[i]);
+            const sortedValuesPrev = indicesPrev.map(i => categoryDataPrev.values[i]);
+            const sortedColorsPrev = indicesPrev.map(i => categoryDataPrev.colors[i]);
+
+            categoriesChartPrevInstance = new Chart(ctxCatPrev, {
+                type: 'bar',
+                data: {
+                    labels: sortedLabelsPrev,
+                    datasets: [{
+                        data: sortedValuesPrev,
+                        backgroundColor: sortedColorsPrev,
+                        borderWidth: 0,
+                        barThickness: 20,
+                        maxBarThickness: 25
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const value = context.raw || 0;
+                                    return `$${value.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Lógica para cargar y procesar datos de Google Sheets ---
+        let allFinancialData = []; // Para almacenar todos los datos obtenidos de la hoja
+
+        async function fetchFinancialData() {
+            // ¡IMPORTANTE! Reemplaza con la URL de tu Apps Script desplegado
+            const scriptURL_doGet = 'https://script.google.com/macros/s/AKfycbxKjfx1MhXQQFGR78-O6MuGYSwdHSihtTBxjXIm-OEnIExDhH2MOsRvYQ1XSe9K7_wJ/exec';
+            try {
+                const response = await fetch(scriptURL_doGet);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allFinancialData = await response.json();
+                console.log("Datos obtenidos de Google Sheets:", allFinancialData);
+                processAndRenderCharts(); // Llama a esta función para procesar y dibujar los gráficos
+            } catch (error) {
+                console.error("Error al obtener datos de Google Sheets:", error);
+                alert("No se pudieron cargar los datos financieros. Verifique su conexión o la configuración de Google Sheets.");
+            }
+        }
+
+        function processAndRenderCharts() {
+            // Obten el mes actual y el mes anterior
+            const today = new Date();
+            const currentMonth = today.getMonth(); // 0 = Enero, 4 = Mayo
+            const currentYear = today.getFullYear();
+
+            const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const previousMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+            // Filtra los datos por mes y año
+            const currentMonthData = allFinancialData.filter(item => {
+                // Asegúrate de que item.Fecha exista y sea una cadena de fecha válida
+                if (!item.Fecha) return false;
+                const itemDate = new Date(item.Fecha);
+                return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
+            });
+
+            const previousMonthData = allFinancialData.filter(item => {
+                if (!item.Fecha) return false;
+                const itemDate = new Date(item.Fecha);
+                return itemDate.getMonth() === previousMonth && itemDate.getFullYear() === previousMonthYear;
+            });
+
+            // --- Procesar datos para el mes actual (Mayo) ---
+            let currentMonthIngreso = 0;
+            let currentMonthEgreso = 0;
+            const currentMonthCategoriesMap = {}; // Usamos un mapa para sumar por categoría
+
+            currentMonthData.forEach(item => {
+                const valor = parseFloat(item.Valor);
+                if (isNaN(valor)) { // Validar que el valor sea un número
+                    console.warn(`Valor no numérico encontrado para ${item.Tipo}: ${item.Valor}`);
+                    return;
+                }
+
+                if (item.Tipo === 'Ingreso') {
+                    currentMonthIngreso += valor;
+                } else if (item.Tipo === 'Egreso') {
+                    currentMonthEgreso += valor;
+                    currentMonthCategoriesMap[item.Categoría] = (currentMonthCategoriesMap[item.Categoría] || 0) + valor;
+                }
+            });
+
+            // Actualiza inOutData (Mayo)
+            inOutData.datasets[0].data = [currentMonthEgreso, currentMonthIngreso];
+
+            // Actualiza categoryData (Mayo)
+            categoryData.labels = Object.keys(currentMonthCategoriesMap);
+            categoryData.values = Object.values(currentMonthCategoriesMap);
+            // Genera colores para las categorías (puedes ajustar esta lógica si tienes colores fijos)
+            categoryData.colors = categoryData.labels.map((_, index) => {
+                // Puedes usar una paleta de colores predefinida o generar aleatoriamente
+                const colors = ['#e74c3c', '#3498db', '#f1c40f', '#e67e22', '#9b59b6', '#1abc9c', '#d35400', '#2980b9', '#2c3e50', '#8e44ad', '#27ae60', '#f39c12'];
+                return colors[index % colors.length]; // Cicla a través de los colores predefinidos
+            });
+
+
+            // --- Procesar datos para el mes anterior (Abril) ---
+            let previousMonthIngreso = 0;
+            let previousMonthEgreso = 0;
+            const previousMonthCategoriesMap = {};
+
+            previousMonthData.forEach(item => {
+                const valor = parseFloat(item.Valor);
+                if (isNaN(valor)) {
+                    console.warn(`Valor no numérico encontrado para ${item.Tipo} (mes anterior): ${item.Valor}`);
+                    return;
+                }
+
+                if (item.Tipo === 'Ingreso') {
+                    previousMonthIngreso += valor;
+                } else if (item.Tipo === 'Egreso') {
+                    previousMonthEgreso += valor;
+                    previousMonthCategoriesMap[item.Categoría] = (previousMonthCategoriesMap[item.Categoría] || 0) + valor;
+                }
+            });
+
+            // Actualiza inOutDataPrev (Abril)
+            inOutDataPrev.datasets[0].data = [previousMonthEgreso, previousMonthIngreso];
+
+            // Actualiza categoryDataPrev (Abril)
+            categoryDataPrev.labels = Object.keys(previousMonthCategoriesMap);
+            categoryDataPrev.values = Object.values(previousMonthCategoriesMap);
+            previousMonthCategoriesMap.colors = categoryDataPrev.labels.map((_, index) => {
+                const colors = ['#e74c3c', '#3498db', '#f1c40f', '#e67e22', '#9b59b6', '#1abc9c', '#d35400', '#2980b9', '#2c3e50', '#8e44ad', '#27ae60', '#f39c12'];
+                return colors[index % colors.length];
+            });
+
+
+            // Vuelve a dibujar los gráficos si ya están visibles, o asegúrate de que se dibujen al mostrar la sección
+            // Si la sección de resumen actual está visible, redibuja sus gráficos
+            if (summarySection.style.display === 'block') {
+                createInOutChart();
+                createCategoriesChart();
+            }
+            // Si la sección del mes anterior está visible, redibuja sus gráficos
+            if (previousMonthSection.style.display === 'block') {
+                createPreviousMonthCharts();
+            }
+
+            // Actualiza los títulos de los resúmenes para mostrar el mes correcto
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+            document.querySelector('#summary-section h1').textContent = `Resumen de ${monthNames[currentMonth]}`;
+            document.querySelector('#previous-month h1').textContent = `Resumen de ${monthNames[previousMonth]}`;
+        }
+
+
+        // --- Navigation Logic ---
+        const financesFormSection = document.getElementById('finances-form-section');
+        const summarySection = document.getElementById('summary-section');
+        const previousMonthSection = document.getElementById('previous-month');
+        const viewSummaryLink = document.getElementById('view-summary-link');
+        const backToFormLink = document.getElementById('back-to-form-link');
+        const backToFormLinkPrev = document.getElementById('back-to-form-link-prev');
+
+        function showForm() {
+            financesFormSection.style.display = 'block';
+            summarySection.style.display = 'none';
+            previousMonthSection.style.display = 'none';
+        }
+
+        function showSummary() {
+            financesFormSection.style.display = 'none';
+            summarySection.style.display = 'block';
+            previousMonthSection.style.display = 'none';
+            // Al mostrar el resumen, crea los gráficos con los datos ya procesados
+            createInOutChart();
+            createCategoriesChart();
+        }
+
+        function showPreviousMonthSummary() {
+            financesFormSection.style.display = 'none';
+            summarySection.style.display = 'none';
+            previousMonthSection.style.display = 'block';
+            // Al mostrar el resumen del mes anterior, crea sus gráficos
+            createPreviousMonthCharts();
+        }
+
+        viewSummaryLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            showSummary();
+        });
+
+        backToFormLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            showForm();
+        });
+
+        backToFormLinkPrev.addEventListener('click', function (e) {
+            e.preventDefault();
+            showForm();
+        });
+
+        // Agrega la navegación entre meses si aún no la tienes
+        // Asegúrate de que estos selectores existan en tu HTML si los usas
+        // Por ejemplo, podrías tener flechas en los encabezados de resumen
+        const currentMonthNavArrow = document.querySelector('#summary-section .nav-arrow.left-arrow'); // Asume que tienes una flecha izquierda
+        const previousMonthRightArrow = document.querySelector('#previous-month .right-arrow'); // Asume que tienes una flecha derecha
+
+        if (currentMonthNavArrow) {
+            currentMonthNavArrow.addEventListener('click', function () {
+                showPreviousMonthSummary();
+            });
+        }
+
+        if (previousMonthRightArrow) {
+            previousMonthRightArrow.addEventListener('click', function () {
+                showSummary();
+            });
+        }
+
+
+        // Llama a fetchFinancialData al cargar la página para obtener los datos iniciales
+        fetchFinancialData();
+
+        // Muestra el formulario al inicio
+        showForm();
+    });
+</script>
+</body>
+
+</html>
