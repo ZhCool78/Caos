@@ -820,13 +820,16 @@
             fetch(scriptURL, {
                 method: 'POST',
                 body: formData
-            })
-            .then(response => response.json())
+                 redirect: 'manual' // Evita seguir redirecciones
+                });
+                .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
                     alert('Datos enviados correctamente a la hoja de cálculo.');
 
-                    formulario.reset();
+                    categoriaSelect.innerHTML = '<option value="" selected disabled>Seleccione una categoría</option>';
+                    subcategoriaSelect.innerHTML = '<option value="" selected disabled>Seleccione una subcategoría</option>';
+                    document.getElementById('comentario').value = '';
                     tipoOperacionSeleccionada = 'Ingreso';
                     actualizarSeleccionTipoOperacion('Ingreso');
                     fechaInput.value = '';
