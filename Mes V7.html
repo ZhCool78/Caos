@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen del Mes</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            left: 0;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .nav-arrow:hover {
+            color: #000;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        #total-amount {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+
+        #legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        #categories-chart-container {
+            height: 400px;
+            position: relative;
+        }
+
+        .sum-value {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Media query para pantallas más pequeñas */
+        @media (max-width: 600px) {
+            #chart-container {
+                height: 250px;
+            }
+            
+            #categories-chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="nav-arrow" onclick="irAlMesAnterior()">
+                <i class="bi bi-arrow-left-circle-fill"></i>
+            </div>
+            <h1 id="monthTitle">Resumen del Mes</h1>
+        </div>
+
+        <div class="card">
+            <div id="legend">
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #e74c3c;"></div>
+                    <span>Egreso</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background-color: #2ecc71;"></div>
+                    <span>Ingreso</span>
+                </div>
+            </div>
+            <div id="chart-container">
+                <canvas id="inOutChart"></canvas>
+                <div id="total-amount">In & Out</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Egreso - Categoría</h3>
+            <div id="categories-chart-container">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+            <div class="sum-value" id="categorySumValue">SUM de Valor</div>
+        </div>
+    </div>
+
+    <script>
+        let inOutChartInstance;
+        let categoriesChartInstance;
+
+        // Function to get current month name in Spanish
+        function getCurrentMonthName() {
+            const date = new Date();
+            const options = { month: 'long' };
+            return date.toLocaleString('es-ES', options);
+        }
+
+        function irAlMesAnterior() {
+            alert("Navegando al mes anterior...");
+            // You would typically modify the date and re-fetch data here
+        }
+
+        async function fetchSheetData() {
+            // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+            const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwQE7V84dqJgRkYuh2hugpomaGtJdRxZmZBTZUZ8s9X3OVKi9axyd_K5dSxfecQDv3LpA/exec'; 
+
+            try {
+                // We'll pass the current month and year to the Apps Script
+                const now = new Date();
+                const currentMonth = now.getMonth() + 1; // getMonth() is 0-indexed
+                const currentYear = now.getFullYear();
+
+                const response = await fetch(`${GOOGLE_SHEET_WEB_APP_URL}?month=${currentMonth}&year=${currentYear}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching data from Google Sheet:", error);
+                // Return default/empty data if fetch fails
+                return {
+                    inOut: { ingresos: 0, egresos: 0 },
+                    categories: []
+                };
+            }
+        }
+
+        function updateCharts(data) {
+            // Update In/Out Chart
+            const inOutData = {
+                labels: ['Egreso', 'Ingreso'],
+                datasets: [{
+                    data: [data.inOut.egresos, data.inOut.ingresos],
+                    backgroundColor: ['#e74c3c', '#2ecc71'],
+                    borderWidth: 0
+                }]
+            };
+
+            if (inOutChartInstance) {
+                inOutChartInstance.destroy(); // Destroy previous instance to update
+            }
+            const ctxInOut = document.getElementById('inOutChart').getContext('2d');
+            inOutChartInstance = new Chart(ctxInOut, {
+                type: 'doughnut',
+                data: inOutData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: $${value.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update Categories Chart
+            const categoryLabels = data.categories.map(cat => cat.label);
+            const categoryValues = data.categories.map(cat => cat.value);
+            const categoryColors = data.categories.map(cat => cat.color); // Assuming your Apps Script provides colors
+
+            // Reorder data for categories chart
+            const indices = Array.from(categoryValues.keys());
+            indices.sort((a, b) => categoryValues[b] - categoryValues[a]);
+            
+            const sortedLabels = indices.map(i => categoryLabels[i]);
+            const sortedValues = indices.map(i => categoryValues[i]);
+            const sortedColors = indices.map(i => categoryColors[i]);
+
+            if (categoriesChartInstance) {
+                categoriesChartInstance.destroy(); // Destroy previous instance to update
+            }
+            const ctxCategories = document.getElementById('categoriesChart').getContext('2d');
+            categoriesChartInstance = new Chart(ctxCategories, {
+                type: 'bar',
+                data: {
+                    labels: sortedLabels,
+                    datasets: [{
+                        data: sortedValues,
+                        backgroundColor: sortedColors,
+                        borderWidth: 0,
+                        barThickness: 20,
+                        maxBarThickness: 25
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw || 0;
+                                    return `$${value.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Update SUM de Valor for categories
+            const totalCategorySum = categoryValues.reduce((sum, val) => sum + val, 0);
+            document.getElementById('categorySumValue').innerText = `SUM de Valor: $${totalCategorySum.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+        }
+
+        // Initialize and fetch data on load
+        document.addEventListener('DOMContentLoaded', async function() {
+            document.getElementById('monthTitle').innerText = `Resumen de ${getCurrentMonthName()}`;
+            const data = await fetchSheetData();
+            updateCharts(data);
+        });
+    </script>
+</body>
+
+</html>
