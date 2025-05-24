@@ -802,7 +802,7 @@
         // Función para enviar datos a Google Sheets
         function enviarDatosGoogleSheets(datos) {
             // ¡IMPORTANTE! Reemplaza con la URL de tu Apps Script desplegado
-            const scriptURL ='https://script.google.com/macros/s/AKfycbwrVopCiMdu0EB-C9XRaFZZzlsHZWOBtO7NZ2PDte4rktajVEJnfYIqZgcFfUZMT0U/exec';
+            const scriptURL ='https://script.google.com/macros/s/AKfycbyX-8Kr8ZzN4KrDBwXZjuBBmWMvJ3QiB-oWIzNRv0s5KdRpGA5rFd_fX-5159XcYK1P/exec';
 
             const formData = new FormData();
             formData.append('tipo', datos.tipo);
@@ -1115,7 +1115,7 @@
 
         async function fetchFinancialData() {
             // ¡IMPORTANTE! Reemplaza con la URL de tu Apps Script desplegado
-            const scriptURL_doGet ='https://script.google.com/macros/s/AKfycbwrVopCiMdu0EB-C9XRaFZZzlsHZWOBtO7NZ2PDte4rktajVEJnfYIqZgcFfUZMT0U/exec';
+            const scriptURL_doGet ='https://script.google.com/macros/s/AKfycbyX-8Kr8ZzN4KrDBwXZjuBBmWMvJ3QiB-oWIzNRv0s5KdRpGA5rFd_fX-5159XcYK1P/exec';
             try {
                 const response = await fetch(scriptURL_doGet);
                 if (!response.ok) {
