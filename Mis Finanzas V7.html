@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Finanzas</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Favicon corregido usando data URI -->
     <link rel="icon" href="clipboard2-data-fill.svg" type="image/svg+xml">
 
 
@@ -510,7 +509,7 @@
                     return;
                 }
 
-                const formData = {
+                const formDataToSend = { // Renamed to avoid confusion with FormData object below
                     tipo: tipoOperacionSeleccionada,
                     categoria: categoria,
                     subcategoria: subcategoria,
@@ -519,16 +518,16 @@
                     comentario: document.getElementById('comentario').value
                 };
 
-                console.log(formData);
+                // No console.log(formDataToSend) here, it's the raw object, not the FormData
                 
                 // Enviar datos a Google Sheets
-                enviarDatosGoogleSheets(formData);
+                enviarDatosGoogleSheets(formDataToSend); // Pass the structured object
             });
             
             // Función para enviar datos a Google Sheets
             function enviarDatosGoogleSheets(datos) {
-                // URL del script de Google Apps Script que procesa la solicitud
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbzr3SNRLllZRP33YCe0eKAFDmcSWjMY2iq-FgQZxSR5-YwzzfQw7LR8y4og0Zf7Id7ASg/exec';
+                // **IMPORTANTE:** Reemplaza esta URL con la URL de tu aplicación web de Google Apps Script desplegada.
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbzSg1IF5JKO2LrEEWRpGMWC3xgmXzp-pIoFDcPPUsrljNvEQMqIbM_LjCwn7wAMpXGh/exec';
                 
                 // Crear el objeto FormData
                 const formData = new FormData();
@@ -545,15 +544,31 @@
                 submitBtn.innerHTML = '<span class="check-icon">⌛</span> Enviando...';
                 submitBtn.disabled = true;
                 
+                // Log the FormData content *after* appending all values
+                console.log("Datos a enviar (FormData):");
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + pair[1]);
+                }
+
                 // Enviar los datos
-		console.log("Datos a enviar:", formData);
                 fetch(scriptURL, {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    // Check if the response is OK (status 200) before trying to parse JSON
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    alert('Datos enviados correctamente a la hoja de cálculo.');
+                    if (data.success) {
+                        alert('Datos enviados correctamente a la hoja de cálculo.');
+                    } else {
+                        alert('Error al enviar datos: ' + data.error);
+                        console.error('Error del servidor:', data.error);
+                    }
                     
                     // Restablecer formulario
                     formulario.reset();
@@ -568,8 +583,8 @@
                     submitBtn.disabled = false;
                 })
                 .catch(error => {
-                    console.error('Error al enviar los datos:', error);
-                    alert('Ocurrió un error al enviar los datos. Por favor, intente nuevamente.');
+                    console.error('Error al enviar los datos (fetch):', error);
+                    alert('Ocurrió un error al enviar los datos. Por favor, intente nuevamente. Detalles: ' + error.message);
                     
                     // Restaurar botón
                     submitBtn.innerHTML = originalBtnText;
@@ -595,7 +610,7 @@
             // Añadir funcionalidad al icono del mes
             document.querySelector('.header-icon').addEventListener('click', function(e) {
                 e.preventDefault();
-                window.location.href = 'MesV7.html';
+                window.location.href = 'mes v3.html'; // Asegúrate que esta es la ruta correcta a tu archivo de resumen
             });
         });
     </script>
