@@ -554,9 +554,6 @@
                 fetch(scriptURL, {
                     method: 'POST',
                     body: formData
-                    headers: { // Añade estos headers
-                    'Content-Type': 'application/x-www-form-urlencoded' 
-                  }
                 })
                 .then(response => {
                     // Check if the response is OK (status 200) before trying to parse JSON
